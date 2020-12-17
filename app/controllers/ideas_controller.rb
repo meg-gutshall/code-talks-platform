@@ -11,7 +11,7 @@ class IdeasController < ApplicationController
 
   # GET /ideas/new
   def new
-    @idea = current_user.ideas.new
+    @idea = Idea.new
   end
 
   # GET /ideas/1/edit
@@ -19,7 +19,7 @@ class IdeasController < ApplicationController
 
   # POST /ideas
   def create
-    @idea = current_user.ideas.new(idea_params)
+    @idea = Idea.new(idea_params)
 
     if @idea.save
       redirect_to @idea, notice: 'Idea was successfully created.'
