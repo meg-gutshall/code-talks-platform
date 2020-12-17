@@ -13,3 +13,5 @@ Turbolinks.start()
 ActiveStorage.start()
 
 import "water.css/out/water.min.css"
+
+import "controllers"
