@@ -12,4 +12,4 @@ Rails.start()
 Turbolinks.start()
 ActiveStorage.start()
 
-import "water.css/out/water.min"
+import "water.css/out/water.min.css"
