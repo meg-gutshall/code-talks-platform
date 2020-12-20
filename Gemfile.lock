@@ -99,6 +99,11 @@ GEM
     erubi (1.10.0)
     et-orbi (1.2.4)
       tzinfo
+    factory_bot (6.1.0)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.1.0)
+      factory_bot (~> 6.1.0)
+      railties (>= 5.0.0)
     faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
@@ -321,6 +326,7 @@ DEPENDENCIES
   capybara (>= 3.26)
   devise (~> 4.7)
   dotenv-rails (~> 2.7)
+  factory_bot_rails
   image_processing (~> 1.12)
   letter_opener (~> 1.7)
   letter_opener_web (~> 1.4)
