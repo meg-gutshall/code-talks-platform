@@ -23,26 +23,11 @@ RSpec.describe '/ideas', type: :request do
     FactoryBot.attributes_for(:idea).transform_values { '' }
   end
 
-  # All these require the user to be authenticated, so sign in a user.
-  before do
-    sign_in create(:user)
-  end
-
   describe 'GET /index' do
     it 'renders a successful response' do
       create(:idea)
       get ideas_url
       expect(response).to be_successful
-    end
-
-    context 'no user is signed in' do
-      before do
-        sign_out User.last
-      end
-      it 'redirects to a login' do
-        get ideas_url
-        expect(response).to redirect_to(new_user_session_url)
-      end
     end
   end
 
@@ -55,6 +40,8 @@ RSpec.describe '/ideas', type: :request do
   end
 
   describe 'GET /new' do
+    before { sign_in create(:user) }
+
     it 'renders a successful response' do
       get new_idea_url
       expect(response).to be_successful
@@ -62,14 +49,28 @@ RSpec.describe '/ideas', type: :request do
   end
 
   describe 'GET /edit' do
+    before { sign_in create(:user) }
+
     it 'render a successful response' do
       idea = create(:idea)
       get edit_idea_url(idea)
       expect(response).to be_successful
     end
+
+    context 'with no user is signed in' do
+      before { sign_out User.last }
+
+      it 'redirects to a login' do
+        idea = create(:idea)
+        get edit_idea_url(idea)
+        expect(response).to redirect_to(new_user_session_url)
+      end
+    end
   end
 
   describe 'POST /create' do
+    before { sign_in create(:user) }
+
     context 'with valid parameters' do
       it 'creates a new Idea' do
         expect do
@@ -95,9 +96,25 @@ RSpec.describe '/ideas', type: :request do
         expect(response).to be_successful
       end
     end
+
+    context 'with no user is signed in' do
+      before do
+        sign_out User.last
+      end
+
+      it 'redirects to login without creating idea' do
+        expect do
+          post ideas_url, params: { idea: invalid_attributes }
+        end.to change(Idea, :count).by(0)
+
+        expect(response).to redirect_to(new_user_session_url)
+      end
+    end
   end
 
   describe 'PATCH /update' do
+    before { sign_in create(:user) }
+
     context 'with valid parameters' do
       let(:new_attributes) do
         FactoryBot.attributes_for(:idea).transform_values { 'new-value' }
@@ -125,9 +142,22 @@ RSpec.describe '/ideas', type: :request do
         expect(response).to be_successful
       end
     end
+
+    context 'with no user is signed in' do
+      before { sign_out User.last }
+
+      it 'redirects to login' do
+        idea = create(:idea)
+        patch idea_url(idea), params: { idea: invalid_attributes }
+
+        expect(response).to redirect_to(new_user_session_url)
+      end
+    end
   end
 
   describe 'DELETE /destroy' do
+    before { sign_in create(:user) }
+
     it 'destroys the requested idea' do
       idea = create(:idea)
       expect do
@@ -139,6 +169,17 @@ RSpec.describe '/ideas', type: :request do
       idea = create(:idea)
       delete idea_url(idea)
       expect(response).to redirect_to(ideas_url)
+    end
+
+    context 'with no user is signed in' do
+      before { sign_out User.last }
+
+      it 'redirects to login' do
+        idea = create(:idea)
+        delete idea_url(idea)
+
+        expect(response).to redirect_to(new_user_session_url)
+      end
     end
   end
 end
