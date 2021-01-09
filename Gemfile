@@ -4,6 +4,7 @@ ruby '2.7.2'
 
 gem 'barnes', '~> 0.0.8'
 gem 'bootsnap', '>= 1.4.4', require: false
+gem 'devise', '~> 4.7'
 gem 'image_processing', '~> 1.12'
 gem 'lograge', '~> 0.11.2'
 gem 'pg', '~> 1.1'
@@ -23,15 +24,16 @@ group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'dotenv-rails', '~> 2.7'
   gem 'factory_bot_rails'
+  gem 'faker', require: false
   gem 'rspec-rails', '~> 4.0'
 end
 
 group :development do
   gem 'letter_opener', '~> 1.7'
   gem 'letter_opener_web', '~> 1.4'
-  gem 'listen', '~> 3.3'
-  gem 'rack-mini-profiler', '~> 2.0'
-  gem 'rubocop', '~> 1.1', require: false
+  gem 'listen', '~> 3.4'
+  gem 'rack-mini-profiler', '~> 2.3'
+  gem 'rubocop', '~> 1.8', require: false
   gem 'rubocop-performance', '~> 1.9', require: false
   gem 'rubocop-rails', '~> 2.8', require: false
   gem 'rubocop-rspec', '~> 2.1', require: false
@@ -42,5 +44,3 @@ group :test do
   gem 'selenium-webdriver'
   gem 'webdrivers'
 end
-
-gem 'devise', '~> 4.7'
