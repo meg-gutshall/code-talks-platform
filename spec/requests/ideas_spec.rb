@@ -16,16 +16,20 @@ RSpec.describe '/ideas', type: :request do
   # Idea. As you add validations to Idea, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) do
-    skip('Add a hash of attributes valid for your model')
+    attributes_for(:idea)
   end
 
   let(:invalid_attributes) do
-    skip('Add a hash of attributes invalid for your model')
+    FactoryBot.attributes_for(:idea).transform_values { '' }
+  end
+
+  let(:user) do
+    create(:user)
   end
 
   describe 'GET /index' do
     it 'renders a successful response' do
-      Idea.create! valid_attributes
+      create(:idea)
       get ideas_url
       expect(response).to be_successful
     end
@@ -33,13 +37,15 @@ RSpec.describe '/ideas', type: :request do
 
   describe 'GET /show' do
     it 'renders a successful response' do
-      idea = Idea.create! valid_attributes
+      idea = create(:idea)
       get idea_url(idea)
       expect(response).to be_successful
     end
   end
 
   describe 'GET /new' do
+    before { sign_in user }
+
     it 'renders a successful response' do
       get new_idea_url
       expect(response).to be_successful
@@ -47,14 +53,36 @@ RSpec.describe '/ideas', type: :request do
   end
 
   describe 'GET /edit' do
+    before { sign_in user }
+
     it 'render a successful response' do
-      idea = Idea.create! valid_attributes
+      idea = create(:idea, user: user)
       get edit_idea_url(idea)
       expect(response).to be_successful
+    end
+
+    context 'when idea is owned by another user' do
+      it 'redirects to index' do
+        idea = create(:idea)
+        get edit_idea_url(idea)
+        expect(response).to redirect_to(ideas_url)
+      end
+    end
+
+    context 'with no user is signed in' do
+      before { sign_out user }
+
+      it 'redirects to user login' do
+        idea = create(:idea)
+        get edit_idea_url(idea)
+        expect(response).to redirect_to(new_user_session_url)
+      end
     end
   end
 
   describe 'POST /create' do
+    before { sign_in user }
+
     context 'with valid parameters' do
       it 'creates a new Idea' do
         expect do
@@ -80,50 +108,123 @@ RSpec.describe '/ideas', type: :request do
         expect(response).to be_successful
       end
     end
+
+    context 'with no user is signed in' do
+      before do
+        sign_out user
+      end
+
+      it 'does not create idea' do
+        expect do
+          post ideas_url, params: { idea: valid_attributes }
+        end.to change(Idea, :count).by(0)
+      end
+
+      it 'redirects to login' do
+        post ideas_url, params: { idea: invalid_attributes }
+        expect(response).to redirect_to(new_user_session_url)
+      end
+    end
   end
 
   describe 'PATCH /update' do
+    before { sign_in user }
+
     context 'with valid parameters' do
       let(:new_attributes) do
-        skip('Add a hash of attributes valid for your model')
+        FactoryBot.attributes_for(:idea).transform_values { 'new-value' }
       end
 
       it 'updates the requested idea' do
-        idea = Idea.create! valid_attributes
+        idea = create(:idea, user: user)
         patch idea_url(idea), params: { idea: new_attributes }
         idea.reload
         skip('Add assertions for updated state')
       end
 
       it 'redirects to the idea' do
-        idea = Idea.create! valid_attributes
+        idea = create(:idea, user: user)
         patch idea_url(idea), params: { idea: new_attributes }
         idea.reload
         expect(response).to redirect_to(idea_url(idea))
       end
     end
 
+    context 'when idea is owned by another user' do
+      it 'does not change idea' do
+        idea = create(:idea)
+        expect do
+          patch idea_url(idea), params: { idea: valid_attributes }
+        end.not_to change(Idea, :count)
+      end
+
+      it 'redirects to index' do
+        idea = create(:idea)
+        patch idea_url(idea), params: { idea: valid_attributes }
+        expect(response).to redirect_to(ideas_url)
+      end
+    end
+
     context 'with invalid parameters' do
       it "renders a successful response (i.e. to display the 'edit' template)" do
-        idea = Idea.create! valid_attributes
+        idea = create(:idea, user: user)
         patch idea_url(idea), params: { idea: invalid_attributes }
         expect(response).to be_successful
+      end
+    end
+
+    context 'with no user is signed in' do
+      before { sign_out User.last }
+
+      it 'redirects to login' do
+        idea = create(:idea, user: user)
+        patch idea_url(idea), params: { idea: invalid_attributes }
+
+        expect(response).to redirect_to(new_user_session_url)
       end
     end
   end
 
   describe 'DELETE /destroy' do
+    before { sign_in user }
+
     it 'destroys the requested idea' do
-      idea = Idea.create! valid_attributes
+      idea = create(:idea, user: user)
       expect do
         delete idea_url(idea)
       end.to change(Idea, :count).by(-1)
     end
 
     it 'redirects to the ideas list' do
-      idea = Idea.create! valid_attributes
+      idea = create(:idea, user: user)
       delete idea_url(idea)
       expect(response).to redirect_to(ideas_url)
+    end
+
+    context 'when idea is owned by another user' do
+      it 'does not change idea count' do
+        idea = create(:idea)
+        expect do
+          delete idea_url(idea)
+        end.to change(Idea, :count).by(0)
+      end
+
+      it 'redirects to index' do
+        idea = create(:idea)
+        delete idea_url(idea)
+        expect(response).to redirect_to(ideas_url)
+      end
+    end
+
+    context 'with no user is signed in' do
+      before { sign_out user }
+
+      it 'redirects to login' do
+        idea = create(:idea, user: user)
+        delete idea_url(idea)
+
+        expect(response).to redirect_to(new_user_session_url)
+      end
     end
   end
 end

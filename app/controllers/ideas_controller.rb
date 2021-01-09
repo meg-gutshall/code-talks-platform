@@ -1,5 +1,7 @@
 class IdeasController < ApplicationController
-  before_action :set_idea, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!, only: %i[new create edit update destroy]
+  before_action :set_idea, only: %i[show edit update destroy]
+  before_action :authenticate_user_can_change_idea!, only: %i[edit update destroy]
 
   # GET /ideas
   def index
@@ -19,7 +21,7 @@ class IdeasController < ApplicationController
 
   # POST /ideas
   def create
-    @idea = Idea.new(idea_params)
+    @idea = current_user.ideas.build(idea_params)
 
     if @idea.save
       redirect_to @idea, notice: 'Idea was successfully created.'
@@ -53,5 +55,11 @@ class IdeasController < ApplicationController
   # Only allow a list of trusted parameters through.
   def idea_params
     params.require(:idea).permit(:title, :description)
+  end
+
+  def authenticate_user_can_change_idea!
+    return if @idea.user == current_user
+
+    redirect_to ideas_url, notice: "You can't update that Idea"
   end
 end
