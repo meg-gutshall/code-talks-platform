@@ -4,6 +4,7 @@ ruby '2.7.2'
 
 gem 'barnes', '~> 0.0.8'
 gem 'bootsnap', '>= 1.4.4', require: false
+gem 'devise', '~> 4.7'
 gem 'image_processing', '~> 1.12'
 gem 'lograge', '~> 0.11.2'
 gem 'pg', '~> 1.1'
@@ -23,6 +24,7 @@ group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'dotenv-rails', '~> 2.7'
   gem 'factory_bot_rails'
+  gem 'faker', require: false
   gem 'rspec-rails', '~> 4.0'
 end
 
@@ -39,9 +41,6 @@ end
 
 group :test do
   gem 'capybara', '>= 3.26'
-  gem 'faker', require: false
   gem 'selenium-webdriver'
   gem 'webdrivers'
 end
-
-gem 'devise', '~> 4.7'
