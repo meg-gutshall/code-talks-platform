@@ -16,24 +16,39 @@ RSpec.describe '/ideas', type: :request do
   # Idea. As you add validations to Idea, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) do
-    skip('Add a hash of attributes valid for your model')
+    attributes_for(:idea)
   end
 
   let(:invalid_attributes) do
-    skip('Add a hash of attributes invalid for your model')
+    FactoryBot.attributes_for(:idea).transform_values { '' }
+  end
+
+  # All these require the user to be authenticated, so sign in a user.
+  before do
+    sign_in create(:user)
   end
 
   describe 'GET /index' do
     it 'renders a successful response' do
-      Idea.create! valid_attributes
+      create(:idea)
       get ideas_url
       expect(response).to be_successful
+    end
+
+    context 'no user is signed in' do
+      before do
+        sign_out User.last
+      end
+      it 'redirects to a login' do
+        get ideas_url
+        expect(response).to redirect_to(new_user_session_url)
+      end
     end
   end
 
   describe 'GET /show' do
     it 'renders a successful response' do
-      idea = Idea.create! valid_attributes
+      idea = create(:idea)
       get idea_url(idea)
       expect(response).to be_successful
     end
@@ -48,7 +63,7 @@ RSpec.describe '/ideas', type: :request do
 
   describe 'GET /edit' do
     it 'render a successful response' do
-      idea = Idea.create! valid_attributes
+      idea = create(:idea)
       get edit_idea_url(idea)
       expect(response).to be_successful
     end
@@ -85,18 +100,18 @@ RSpec.describe '/ideas', type: :request do
   describe 'PATCH /update' do
     context 'with valid parameters' do
       let(:new_attributes) do
-        skip('Add a hash of attributes valid for your model')
+        FactoryBot.attributes_for(:idea).transform_values { 'new-value' }
       end
 
       it 'updates the requested idea' do
-        idea = Idea.create! valid_attributes
+        idea = create(:idea)
         patch idea_url(idea), params: { idea: new_attributes }
         idea.reload
         skip('Add assertions for updated state')
       end
 
       it 'redirects to the idea' do
-        idea = Idea.create! valid_attributes
+        idea = create(:idea)
         patch idea_url(idea), params: { idea: new_attributes }
         idea.reload
         expect(response).to redirect_to(idea_url(idea))
@@ -105,7 +120,7 @@ RSpec.describe '/ideas', type: :request do
 
     context 'with invalid parameters' do
       it "renders a successful response (i.e. to display the 'edit' template)" do
-        idea = Idea.create! valid_attributes
+        idea = create(:idea)
         patch idea_url(idea), params: { idea: invalid_attributes }
         expect(response).to be_successful
       end
@@ -114,14 +129,14 @@ RSpec.describe '/ideas', type: :request do
 
   describe 'DELETE /destroy' do
     it 'destroys the requested idea' do
-      idea = Idea.create! valid_attributes
+      idea = create(:idea)
       expect do
         delete idea_url(idea)
       end.to change(Idea, :count).by(-1)
     end
 
     it 'redirects to the ideas list' do
-      idea = Idea.create! valid_attributes
+      idea = create(:idea)
       delete idea_url(idea)
       expect(response).to redirect_to(ideas_url)
     end
