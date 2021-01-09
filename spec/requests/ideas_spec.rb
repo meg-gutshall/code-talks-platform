@@ -114,11 +114,14 @@ RSpec.describe '/ideas', type: :request do
         sign_out user
       end
 
-      it 'redirects to login without creating idea' do
+      it 'does not create idea' do
         expect do
-          post ideas_url, params: { idea: invalid_attributes }
+          post ideas_url, params: { idea: valid_attributes }
         end.to change(Idea, :count).by(0)
+      end
 
+      it 'redirects to login' do
+        post ideas_url, params: { idea: invalid_attributes }
         expect(response).to redirect_to(new_user_session_url)
       end
     end
@@ -145,16 +148,20 @@ RSpec.describe '/ideas', type: :request do
         idea.reload
         expect(response).to redirect_to(idea_url(idea))
       end
+    end
 
-      context 'when idea is owned by another user' do
-        it 'redirects to index without making a change' do
-          idea = create(:idea)
-          expect do
-            patch idea_url(idea), params: { idea: new_attributes }
-          end.not_to change(Idea, :count)
+    context 'when idea is owned by another user' do
+      it 'does not change idea' do
+        idea = create(:idea)
+        expect do
+          patch idea_url(idea), params: { idea: valid_attributes }
+        end.not_to change(Idea, :count)
+      end
 
-          expect(response).to redirect_to(ideas_url)
-        end
+      it 'redirects to index' do
+        idea = create(:idea)
+        patch idea_url(idea), params: { idea: new_attributes }
+        expect(response).to redirect_to(ideas_url)
       end
     end
 
@@ -200,6 +207,11 @@ RSpec.describe '/ideas', type: :request do
         expect do
           delete idea_url(idea)
         end.to change(Idea, :count).by(0)
+      end
+
+      it 'redirects to index' do
+        idea = create(:idea)
+        delete idea_url(idea)
         expect(response).to redirect_to(ideas_url)
       end
     end
