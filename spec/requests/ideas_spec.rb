@@ -160,7 +160,7 @@ RSpec.describe '/ideas', type: :request do
 
       it 'redirects to index' do
         idea = create(:idea)
-        patch idea_url(idea), params: { idea: new_attributes }
+        patch idea_url(idea), params: { idea: valid_attributes }
         expect(response).to redirect_to(ideas_url)
       end
     end
