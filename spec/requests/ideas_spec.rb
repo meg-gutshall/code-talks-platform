@@ -151,7 +151,7 @@ RSpec.describe '/ideas', type: :request do
           idea = create(:idea)
           expect do
             patch idea_url(idea), params: { idea: new_attributes }
-          end.not_to change { idea.reload }
+          end.not_to change(Idea, :count)
 
           expect(response).to redirect_to(ideas_url)
         end
