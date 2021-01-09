@@ -61,10 +61,18 @@ RSpec.describe '/ideas', type: :request do
       expect(response).to be_successful
     end
 
+    context "when idea is owned by another user" do
+      it 'redirects to index' do
+        idea = create(:idea)
+        get edit_idea_url(idea)
+        expect(response).to redirect_to(ideas_url)
+      end
+    end
+
     context 'with no user is signed in' do
       before { sign_out user }
 
-      it 'redirects to a login' do
+      it 'redirects to user login' do
         idea = create(:idea)
         get edit_idea_url(idea)
         expect(response).to redirect_to(new_user_session_url)
@@ -137,6 +145,17 @@ RSpec.describe '/ideas', type: :request do
         idea.reload
         expect(response).to redirect_to(idea_url(idea))
       end
+
+      context "when idea is owned by another user" do
+        it 'redirects to index without making a change' do
+          idea = create(:idea)
+          expect do
+            patch idea_url(idea), params: { idea: new_attributes }
+          end.to_not change { idea.reload }
+
+          expect(response).to redirect_to(ideas_url)
+        end
+      end
     end
 
     context 'with invalid parameters' do
@@ -173,6 +192,16 @@ RSpec.describe '/ideas', type: :request do
       idea = create(:idea, user: user)
       delete idea_url(idea)
       expect(response).to redirect_to(ideas_url)
+    end
+
+    context "when idea is owned by another user" do
+      it 'does not change idea count' do
+        idea = create(:idea)
+        expect do
+          delete idea_url(idea)
+        end.to change(Idea, :count).by(0)
+        expect(response).to redirect_to(ideas_url)
+      end
     end
 
     context 'with no user is signed in' do
