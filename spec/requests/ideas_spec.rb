@@ -61,7 +61,7 @@ RSpec.describe '/ideas', type: :request do
       expect(response).to be_successful
     end
 
-    context "when idea is owned by another user" do
+    context 'when idea is owned by another user' do
       it 'redirects to index' do
         idea = create(:idea)
         get edit_idea_url(idea)
@@ -146,12 +146,12 @@ RSpec.describe '/ideas', type: :request do
         expect(response).to redirect_to(idea_url(idea))
       end
 
-      context "when idea is owned by another user" do
+      context 'when idea is owned by another user' do
         it 'redirects to index without making a change' do
           idea = create(:idea)
           expect do
             patch idea_url(idea), params: { idea: new_attributes }
-          end.to_not change { idea.reload }
+          end.not_to change { idea.reload }
 
           expect(response).to redirect_to(ideas_url)
         end
@@ -194,7 +194,7 @@ RSpec.describe '/ideas', type: :request do
       expect(response).to redirect_to(ideas_url)
     end
 
-    context "when idea is owned by another user" do
+    context 'when idea is owned by another user' do
       it 'does not change idea count' do
         idea = create(:idea)
         expect do

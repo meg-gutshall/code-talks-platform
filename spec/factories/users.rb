@@ -7,6 +7,6 @@ FactoryBot.define do
     end
 
     password { User.new.send(:password_digest, '12345678') }
-    encrypted_password { User.new.send(:password_digest, '12345678') }    
+    encrypted_password { User.new.send(:password_digest, '12345678') }
   end
 end
