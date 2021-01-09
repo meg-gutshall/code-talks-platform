@@ -1,7 +1,7 @@
 class IdeasController < ApplicationController
   before_action :authenticate_user!, only: %i[new create edit update destroy]
-  before_action :set_idea, only: [:show, :edit, :update, :destroy]
-  before_action :authenticate_user_can_change_idea!, only: [:edit, :update, :destroy]
+  before_action :set_idea, only: %i[show edit update destroy]
+  before_action :authenticate_user_can_change_idea!, only: %i[edit update destroy]
 
   # GET /ideas
   def index
