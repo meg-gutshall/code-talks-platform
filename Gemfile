@@ -39,6 +39,7 @@ end
 
 group :test do
   gem 'capybara', '>= 3.26'
+  gem 'faker', require: false
   gem 'selenium-webdriver'
   gem 'webdrivers'
 end
