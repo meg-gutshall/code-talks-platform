@@ -33,7 +33,7 @@ group :development do
   gem 'letter_opener_web', '~> 1.4'
   gem 'listen', '~> 3.4'
   gem 'rack-mini-profiler', '~> 2.3'
-  gem 'rubocop', '~> 1.8', require: false
+  gem 'rubocop', '~> 1.9', require: false
   gem 'rubocop-performance', '~> 1.9', require: false
   gem 'rubocop-rails', '~> 2.8', require: false
   gem 'rubocop-rspec', '~> 2.1', require: false
